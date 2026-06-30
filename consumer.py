@@ -1,5 +1,6 @@
 import json
 from kafka import KafkaConsumer
+import producer
 
 def json_deserializer(data):
     # L'opération inverse du Producer : on traduit les octets de Kafka en dictionnaire Python
@@ -50,28 +51,19 @@ try:
                 taux_remplissage = 0.0
             
             # CRÉATION DU NOUVEL OBJET
-            station_nettoyee = {
-                "id": station.get('number'), # Indispensable pour la prop 'key' dans les futurs .map() 
+                stations_propres.append({
+                "id": station.get('number'),
                 "nom": nom_propre,
-                "statut": statut_brut,
                 "est_active": est_active,
                 "velos": velos,
                 "places_totales": places_totales,
                 "remplissage_pct": round(taux_remplissage, 1)
-            }
+            })
+
+        # 4. On envoie la liste nettoyée dans le NOUVEAU topic Kafka
+        producer.send("lyon-velov-propre", stations_propres)
             
-            stations_propres.append(station_nettoyee)
-            
-        
-        # Petit rapport pour le terminal
-        print(f"Nettoyage terminé : {len(stations_propres)} stations formatées et sécurisées.")
-        print("Voici toutes les stations du lot :")
-        
-        # On parcourt la liste nettoyée pour tout afficher proprement
-        for station in stations_propres:
-            print(f"{station['nom']} | Vélos: {station['velos']}/{station['places_totales']} ({station['remplissage_pct']}%)")
-            
-        print("-" * 50)
+        print(f"[Offset N°{offset}] {len(stations_propres)} stations nettoyées et envoyées dans 'lyon-velov-propre' !")
 
 except Exception as e:
     print(f"Erreur du Consumer : {e}")
