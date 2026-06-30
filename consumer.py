@@ -1,12 +1,13 @@
 import json
-from kafka import KafkaConsumer
-import producer
+from kafka import KafkaConsumer, KafkaProducer
 
 def json_deserializer(data):
     # L'opération inverse du Producer : on traduit les octets de Kafka en dictionnaire Python
     return json.loads(data.decode("utf-8"))
 
 print("[Consumer] Démarrage et connexion à Kafka...")
+
+
 
 try:
     # Initialisation de notre lecteur
@@ -17,6 +18,11 @@ try:
         value_deserializer=json_deserializer
     )
     
+    mon_producteur_kafka = KafkaProducer(
+        bootstrap_servers=["localhost:9092"],
+        value_serializer=lambda v: json.dumps(v, ensure_ascii=False).encode("utf-8")
+    )
+
     print("Connecté ! En attente de nouvelles données...")
     print("-" * 50)
 
@@ -61,7 +67,7 @@ try:
             })
 
         # 4. On envoie la liste nettoyée dans le NOUVEAU topic Kafka
-        producer.send("lyon-velov-propre", stations_propres)
+        mon_producteur_kafka.send("lyon-velov-propre", stations_propres)
             
         print(f"[Offset N°{offset}] {len(stations_propres)} stations nettoyées et envoyées dans 'lyon-velov-propre' !")
 
