@@ -57,7 +57,7 @@ try:
                 taux_remplissage = 0.0
             
             # CRÉATION DU NOUVEL OBJET
-                stations_propres.append({
+            stations_propres.append({
                 "id": station.get('number'),
                 "nom": nom_propre,
                 "est_active": est_active,
