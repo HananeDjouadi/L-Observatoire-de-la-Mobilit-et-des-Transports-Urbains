@@ -1,5 +1,6 @@
 import json
 from kafka import KafkaConsumer, KafkaProducer
+import mysql.connector
 
 def json_deserializer(data):
     # L'opération inverse du Producer : on traduit les octets de Kafka en dictionnaire Python
@@ -25,6 +26,15 @@ try:
 
     print("Connecté ! En attente de nouvelles données...")
     print("-" * 50)
+
+    # 1. Connexion à ta base MySQL
+    db = mysql.connector.connect(
+        host="localhost",
+        user="root",
+        password="", 
+        database="observatoire_velov"
+    )
+    cursor = db.cursor()
 
     # Cette boucle écoute le serveur Kafka en permanence
     for message in consumer:
@@ -65,6 +75,16 @@ try:
                 "places_totales": places_totales,
                 "remplissage_pct": round(taux_remplissage, 1)
             })
+
+            for station in stations_propres:
+                sql = """INSERT INTO stations_historique 
+                        (id, nom, est_active, velos, places_totales, remplissage_pct) 
+                        VALUES (%s, %s, %s, %s, %s, %s)"""
+                val = (station['id'], station['nom'], station['est_active'], 
+                    station['velos'], station['places_totales'], station['remplissage_pct'])
+                cursor.execute(sql, val)
+        
+            db.commit()
 
         # 4. On envoie la liste nettoyée dans le NOUVEAU topic Kafka
         mon_producteur_kafka.send("lyon-velov-propre", stations_propres)
