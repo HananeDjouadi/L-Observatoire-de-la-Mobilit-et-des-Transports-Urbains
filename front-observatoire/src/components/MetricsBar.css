@@ -36,7 +36,7 @@
 .metric-number {
   font-size: 1.8rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-primary);
   font-family: monospace;
   line-height: 1;
 }
@@ -56,7 +56,7 @@
 
 .metric-total {
   font-size: 0.85rem;
-  color: #4b526d;
+  color: var(--text-secondary);
   font-family: monospace;
 }
 

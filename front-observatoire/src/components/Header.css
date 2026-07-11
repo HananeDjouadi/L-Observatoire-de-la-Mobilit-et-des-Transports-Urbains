@@ -3,9 +3,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 10px 20px;
-  background-color: var(--bg-main); /* Noir */
+  background-color: var(--bg-main);
   border-bottom: 1px solid var(--border-color);
-  color: #e0e0e0;
+  color: var(--text-primary);
   font-family: 'Segoe UI', sans-serif;
 }
 
@@ -13,7 +13,7 @@
   font-weight: bold;
   font-size: 1.2rem;
   margin-right: 15px;
-  color: #fff;
+  color: var(--text-primary);
 }
 
 .location {
@@ -36,4 +36,88 @@
   padding: 6px 12px;
   border-radius: 4px;
   cursor: pointer;
+}
+
+.theme-toggle-switch {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  background-color: #122131; /* Bleu-gris foncé en sourdine */
+  border: 2px solid #233e56; /* Bordure assortie */
+  border-radius: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 6px;
+  box-sizing: border-box;
+  margin-right: 20px;
+  transition: background-color 0.3s, border-color 0.3s;
+  user-select: none;
+}
+
+.theme-toggle-switch.light {
+  background-color: #4b7a9e;
+  border-color: #7aa5c9;
+}
+
+.switch-icon-bg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 14px;
+  height: 14px;
+  color: #3b5a75;
+  transition: color 0.3s;
+}
+
+.theme-toggle-switch.light .switch-icon-bg.sun {
+  color: #a5c3db;
+}
+
+.theme-toggle-switch.dark .switch-icon-bg.moon {
+  color: #274059;
+}
+
+.switch-icon-bg svg {
+  width: 12px;
+  height: 12px;
+}
+
+.switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background-color: #0f1c29;
+  color: #a5c3db;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.25s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.theme-toggle-switch.dark .switch-thumb {
+  transform: translateX(24px); /* Glisse sur la lune */
+  background-color: #0d1b2a;
+  color: #e0f2fe; /* Lune claire */
+}
+
+.theme-toggle-switch.light .switch-thumb {
+  transform: translateX(0); /* Reste sur le soleil */
+  background-color: #ffb703; /* Soleil jaune/orange */
+  color: #ffffff;
+}
+
+.switch-thumb svg {
+  width: 12px;
+  height: 12px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
 }

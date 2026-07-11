@@ -13,6 +13,35 @@
   justify-content: space-between;
   align-items: center;
   user-select: none;
+  padding: 16px 16px 0 16px; /* Alignement identique à l'overlay de la carte (top/left: 16px) */
+}
+
+.list-search-container {
+  display: flex;
+  align-items: center;
+}
+
+.list-search-input {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: #ffffff;
+  padding: 6px 12px;
+  font-size: 0.8rem;
+  width: 220px;
+  height: 32px;
+  outline: none;
+  box-sizing: border-box;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.list-search-input:focus {
+  border-color: #f43f5e;
+  box-shadow: 0 0 6px rgba(244, 63, 94, 0.25);
+}
+
+.list-search-input::placeholder {
+  color: #7e8494;
 }
 
 .view-tabs {
@@ -200,19 +229,19 @@
 
 .stations-table th {
   padding: 12px 16px;
-  color: #7e8494;
+  color: var(--text-secondary);
   text-transform: uppercase;
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.05em;
-  border-bottom: 1px solid #1f212d;
+  border-bottom: 1px solid var(--border-color);
   background-color: rgba(255, 255, 255, 0.01);
 }
 
 .stations-table td {
   padding: 12px 16px;
-  border-bottom: 1px solid #1f212d;
-  color: #e0e0e0;
+  border-bottom: 1px solid var(--border-color);
+  color: var(--text-primary);
 }
 
 .stations-table tr {
@@ -221,11 +250,11 @@
 }
 
 .stations-table tr:hover {
-  background-color: #16171d;
+  background-color: var(--bg-card-hover);
 }
 
 .stations-table tr.selected-row {
-  background-color: rgba(255, 255, 255, 0.03);
+  background-color: var(--bg-selected);
 }
 
 .station-name-cell {
@@ -288,8 +317,8 @@
 
 /* Historical Replay Slider panel at the bottom */
 .historical-replay-panel {
-  background-color: #12131a;
-  border: 1px solid #1f212d;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 12px 16px;
   display: flex;

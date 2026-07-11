@@ -13,11 +13,15 @@ const CenterPanel = ({
   replayTime = 0,
   setReplayTime,
   isPlaying = false,
-  setIsPlaying
+  setIsPlaying,
+  searchQuery = '',
+  setSearchQuery,
+  isDarkMode = true
 }) => {
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersGroupRef = useRef(null);
+  const tileLayerRef = useRef(null);
 
   // Initialize Map
   useEffect(() => {
@@ -33,14 +37,24 @@ const CenterPanel = ({
       });
 
       // CartoDB Dark Matter tiles matching VeloControl sci-fi dark style
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      const tiles = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
         maxZoom: 20
       }).addTo(map);
 
+      tileLayerRef.current = tiles;
       mapInstanceRef.current = map;
       markersGroupRef.current = L.layerGroup().addTo(map);
     }
   }, []);
+
+  // Update Tile Layer URL based on Dark/Light theme
+  useEffect(() => {
+    if (tileLayerRef.current) {
+      const darkUrl = 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+      const lightUrl = 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png';
+      tileLayerRef.current.setUrl(isDarkMode ? darkUrl : lightUrl);
+    }
+  }, [isDarkMode]);
 
   // Force invalidates Leaflet layout when returning to Map View
   useEffect(() => {
@@ -130,6 +144,16 @@ const CenterPanel = ({
             >
               List View
             </button>
+          </div>
+
+          <div className="list-search-container">
+            <input 
+              type="text" 
+              className="list-search-input" 
+              placeholder="Search station in list..." 
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
           </div>
         </div>
       )}
@@ -247,7 +271,7 @@ const CenterPanel = ({
               }}
               className="replay-slider-input"
               style={{
-                background: `linear-gradient(to right, rgba(244, 63, 94, 0.25) ${((replayTime + 24) / 24) * 100}%, #16161a ${((replayTime + 24) / 24) * 100}%)`,
+                background: `linear-gradient(to right, ${isDarkMode ? 'rgba(244, 63, 94, 0.25)' : 'rgba(244, 63, 94, 0.45)'} ${((replayTime + 24) / 24) * 100}%, ${isDarkMode ? '#16161a' : '#e3decb'} ${((replayTime + 24) / 24) * 100}%)`,
                 border: '1px solid var(--border-color)'
               }}
             />

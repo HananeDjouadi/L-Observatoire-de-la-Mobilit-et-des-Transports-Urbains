@@ -17,6 +17,7 @@ const INITIAL_STATIONS = [
 ];
 
 function App() {
+  const [isDarkMode, setIsDarkMode] = useState(true);
   const [metrics, setMetrics] = useState({
     totalBikes: 107,
     activeStations: 10,
@@ -262,7 +263,7 @@ function App() {
 
   return (
     <div className="dashboard-grid">
-      <Header />
+      <Header isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
       <MetricsBar
         totalBikes={metrics.totalBikes}
         activeStations={metrics.activeStations}
@@ -295,6 +296,9 @@ function App() {
           setReplayTime={setReplayTime}
           isPlaying={isPlaying}
           setIsPlaying={setIsPlaying}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          isDarkMode={isDarkMode}
         />
 
         <RightSidebar

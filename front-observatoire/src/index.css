@@ -2,6 +2,7 @@
   --bg-main: #000000;
   --bg-card: #16161a;
   --bg-card-hover: #222227;
+  --bg-selected: rgba(255, 255, 255, 0.05);
   --border-color: #27272c;
   --text-primary: #ffffff;
   --text-secondary: #88888e;
@@ -13,6 +14,16 @@
   --accent-orange-bg: rgba(245, 158, 11, 0.1);
   --font-sans: 'Segoe UI', system-ui, -apple-system, sans-serif;
   --font-mono: 'Courier New', Courier, monospace;
+}
+
+body.light-theme {
+  --bg-main: #f5f2eb;        /* Warm Beige background */
+  --bg-card: #fdfcf7;        /* Soft Cream cards */
+  --bg-card-hover: #f7f4eb;  /* Slight hover beige */
+  --bg-selected: rgba(0, 0, 0, 0.05); /* Soft dark selection tint */
+  --border-color: #e3decb;   /* Warm slate/beige borders */
+  --text-primary: #1c1917;   /* Charcoal text */
+  --text-secondary: #6b6661; /* Warm dark gray text */
 }
 
 * {

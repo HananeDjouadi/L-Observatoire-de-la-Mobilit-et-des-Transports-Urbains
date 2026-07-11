@@ -43,7 +43,7 @@
 .detail-station-name {
   font-size: 1.15rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .detail-status-badge {
@@ -82,7 +82,7 @@
 
 .detail-stat-box {
   background-color: rgba(255, 255, 255, 0.01);
-  border: 1px solid #1f212d;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 10px;
   display: flex;
@@ -106,13 +106,13 @@
 .detail-stat-count {
   font-size: 1.4rem;
   font-weight: 700;
-  color: #ffffff;
+  color: var(--text-primary);
   font-family: monospace;
   line-height: 1;
 }
 
 .detail-stat-divider {
-  color: #4b526d;
+  color: var(--text-secondary);
   font-size: 0.85rem;
 }
 

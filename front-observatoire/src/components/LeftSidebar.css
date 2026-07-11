@@ -39,7 +39,7 @@
 .filter-btn {
   background-color: var(--bg-card); /* Gris foncé au lieu de bleu nuit */
   border: 1px solid var(--border-color);
-  color: #ffffff;
+  color: var(--text-primary);
   padding: 10px 12px;
   border-radius: 6px;
   text-align: left;
@@ -52,8 +52,8 @@
 }
 
 .filter-btn:hover {
-  background-color: #1f212d;
-  border-color: #3f445e;
+  background-color: var(--bg-card-hover);
+  border-color: var(--border-color);
 }
 
 .filter-btn.active {
@@ -72,8 +72,8 @@
 }
 
 .filter-btn.reset-btn:hover {
-  color: #ffffff;
-  background-color: rgba(255, 255, 255, 0.02);
+  color: var(--text-primary);
+  background-color: var(--bg-card-hover);
 }
 
 /* Kafka Pipeline stats */
@@ -98,7 +98,7 @@
 .pipeline-value {
   font-family: monospace;
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .pipeline-value.active-green {
@@ -177,7 +177,7 @@
 .sidebar-search-input {
   background-color: var(--bg-card); /* Gris foncé au lieu de bleu nuit */
   border: 1px solid var(--border-color);
-  color: #ffffff;
+  color: var(--text-primary);
   border-radius: 6px;
   padding: 8px 12px;
   font-size: 0.8rem;
@@ -212,11 +212,12 @@
 }
 
 .sidebar-station-item:hover {
-  background-color: #16171d;
+  background-color: var(--bg-card-hover);
 }
 
 .sidebar-station-item.selected {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--bg-card-hover);
+  box-shadow: inset 3px 0 0 var(--accent-red);
 }
 
 .station-name-group {
@@ -247,12 +248,12 @@
 
 .station-name {
   font-size: 0.8rem;
-  color: #e0e0e0;
+  color: var(--text-primary);
 }
 
 .sidebar-station-item.selected .station-name {
   font-weight: 600;
-  color: #ffffff;
+  color: var(--text-primary);
 }
 
 .station-availability {
