@@ -1,0 +1,269 @@
+.left-sidebar-container {
+  display: flex;
+  flex-direction: column;
+  background-color: #0b0c10; /* Fond noir du panneau de gauche */
+  border-right: 1px solid #1f212d;
+  padding: 20px;
+  width: 260px;
+  flex-shrink: 0;
+  height: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
+  user-select: none;
+}
+
+.sidebar-section {
+  margin-bottom: 24px;
+}
+
+.sidebar-section:last-child {
+  margin-bottom: 0;
+}
+
+.sidebar-section-title {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #7e8494;
+  letter-spacing: 0.1em;
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+/* Instant Query buttons */
+.query-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.filter-btn {
+  background-color: #16171d;
+  border: 1px solid #2e303a;
+  color: #ffffff;
+  padding: 10px 12px;
+  border-radius: 6px;
+  text-align: left;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  outline: none;
+}
+
+.filter-btn:hover {
+  background-color: #1f212d;
+  border-color: #3f445e;
+}
+
+.filter-btn.active {
+  border-color: #f43f5e;
+  background-color: rgba(244, 63, 94, 0.05);
+  box-shadow: 0 0 10px rgba(244, 63, 94, 0.15);
+}
+
+.filter-btn.reset-btn {
+  background-color: transparent;
+  border: none;
+  color: #7e8494;
+  text-align: center;
+  font-size: 0.75rem;
+  padding: 6px;
+}
+
+.filter-btn.reset-btn:hover {
+  color: #ffffff;
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+/* Kafka Pipeline stats */
+.pipeline-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.pipeline-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.8rem;
+  line-height: 1.4;
+}
+
+.pipeline-label {
+  color: #7e8494;
+}
+
+.pipeline-value {
+  font-family: monospace;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.pipeline-value.active-green {
+  color: #10b981;
+  text-shadow: 0 0 6px rgba(16, 185, 129, 0.3);
+}
+
+/* Global Filters */
+.global-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filter-item-label {
+  font-size: 0.75rem;
+  color: #7e8494;
+}
+
+.capacity-range-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.capacity-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 4px;
+  border-radius: 2px;
+  background: #1f212d;
+  outline: none;
+}
+
+.capacity-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #10b981;
+  cursor: pointer;
+  box-shadow: 0 0 4px rgba(16, 185, 129, 0.5);
+}
+
+.capacity-range-labels {
+  font-size: 0.7rem;
+  color: #7e8494;
+  display: flex;
+  justify-content: space-between;
+}
+
+.refresh-rate-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 4px;
+  border-top: 1px solid #1f212d;
+  padding-top: 8px;
+}
+
+.refresh-value {
+  font-size: 0.8rem;
+  color: #7e8494;
+  font-family: monospace;
+}
+
+/* Station list section */
+.station-list-section {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+.sidebar-search-input {
+  background-color: #16171d;
+  border: 1px solid #2e303a;
+  color: #ffffff;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 12px;
+  outline: none;
+}
+
+.sidebar-search-input:focus {
+  border-color: #3f445e;
+}
+
+.sidebar-station-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+
+.sidebar-station-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.sidebar-station-item:hover {
+  background-color: #16171d;
+}
+
+.sidebar-station-item.selected {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.station-name-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.station-indicator-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.station-indicator-dot.active {
+  background-color: #10b981;
+  box-shadow: 0 0 4px #10b981;
+}
+
+.station-indicator-dot.inactive {
+  background-color: #f43f5e;
+  box-shadow: 0 0 4px #f43f5e;
+}
+
+.station-name {
+  font-size: 0.8rem;
+  color: #e0e0e0;
+}
+
+.sidebar-station-item.selected .station-name {
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.station-availability {
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: #7e8494;
+}
+
+.no-stations-found {
+  font-size: 0.75rem;
+  color: #7e8494;
+  padding: 8px;
+  text-align: center;
+}

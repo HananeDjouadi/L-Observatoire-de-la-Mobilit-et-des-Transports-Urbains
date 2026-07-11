@@ -1,0 +1,70 @@
+.metrics-bar-container {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background-color: #12131a; /* Couleur sombre du fond des cartes */
+  border-bottom: 1px solid #1f212d;
+  width: 100%;
+  user-select: none;
+}
+
+.metric-item {
+  padding: 16px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border-right: 1px solid #1f212d;
+}
+
+.metric-item:last-child {
+  border-right: none;
+}
+
+.metric-label {
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #7e8494; /* Gris secondaire */
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.metric-value-row {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.metric-number {
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: #ffffff;
+  font-family: monospace;
+  line-height: 1;
+}
+
+.metric-number.negative {
+  color: #f43f5e; /* Rouge pour les stations fermées */
+}
+
+.metric-trend {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.metric-trend.positive {
+  color: #10b981; /* Vert positif */
+}
+
+.metric-total {
+  font-size: 0.85rem;
+  color: #4b526d;
+  font-family: monospace;
+}
+
+.metric-subtext {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.metric-subtext.negative {
+  color: #f43f5e;
+}

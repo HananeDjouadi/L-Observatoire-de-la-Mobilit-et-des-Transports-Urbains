@@ -1,0 +1,39 @@
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #1a1a1a;
+  border-bottom: 1px solid #333;
+  color: #e0e0e0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.brand {
+  font-weight: bold;
+  font-size: 1.2rem;
+  margin-right: 15px;
+  color: #fff;
+}
+
+.location {
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.clock {
+  font-family: monospace;
+  color: #4ade80;
+  /* Vert "Live" */
+  margin-right: 20px;
+}
+
+.export-btn {
+  background-color: #e11d48;
+  /* Rouge vif pour le bouton export */
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
