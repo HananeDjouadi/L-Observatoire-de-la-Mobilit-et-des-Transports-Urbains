@@ -20,25 +20,25 @@ const LeftSidebar = ({
       <div className="sidebar-section">
         <h3 className="sidebar-section-title">INSTANT QUERY</h3>
         <div className="query-filters">
-          <button 
+          <button
             className={`filter-btn ${filterType === 'closed' ? 'active' : ''}`}
             onClick={() => setFilterType(filterType === 'closed' ? 'all' : 'closed')}
           >
             Closed stations now
           </button>
-          <button 
+          <button
             className={`filter-btn ${filterType === 'high_demand' ? 'active' : ''}`}
             onClick={() => setFilterType(filterType === 'high_demand' ? 'all' : 'high_demand')}
           >
             High demand (&gt;90% full)
           </button>
-          <button 
+          <button
             className={`filter-btn ${filterType === 'empty' ? 'active' : ''}`}
             onClick={() => setFilterType(filterType === 'empty' ? 'all' : 'empty')}
           >
             Empty stations
           </button>
-          <button 
+          <button
             className="filter-btn reset-btn"
             onClick={() => {
               setFilterType('all');
@@ -79,14 +79,14 @@ const LeftSidebar = ({
         <h3 className="sidebar-section-title">GLOBAL FILTERS</h3>
         <div className="global-filters">
           <span className="filter-item-label">Capacity Threshold</span>
-          
+
           {/* Custom Dual Sliders or Range Inputs for Capacity */}
           <div className="capacity-range-inputs">
-            <input 
-              type="range" 
-              min="0" 
-              max="50" 
-              value={capacityThreshold.min} 
+            <input
+              type="range"
+              min="0"
+              max="50"
+              value={capacityThreshold.min}
               onChange={(e) => setCapacityThreshold({ ...capacityThreshold, min: parseInt(e.target.value) || 0 })}
               className="capacity-slider"
             />
@@ -105,8 +105,8 @@ const LeftSidebar = ({
       {/* STATION LIST */}
       <div className="sidebar-section station-list-section">
         <h3 className="sidebar-section-title">STATION LIST</h3>
-        <input 
-          type="text" 
+        <input
+          type="text"
           placeholder="Search stations..."
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -114,8 +114,8 @@ const LeftSidebar = ({
         />
         <div className="sidebar-station-list">
           {stations.map(station => (
-            <div 
-              key={station.id} 
+            <div
+              key={station.id}
               className={`sidebar-station-item ${station.id === selectedStationId ? 'selected' : ''}`}
               onClick={() => setSelectedStationId(station.id)}
             >

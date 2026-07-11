@@ -57,19 +57,14 @@ async def flux_velov(websocket: WebSocket):
     finally:
         await consumer.stop()
 
+# Dans api.py
 @app.get("/stations/fermees")
 async def get_stations_fermees():
-    # 1. On se connecte
     conn = get_db_connection()
-    cursor = conn.cursor(dictionary=True) # dictionary=True permet de recevoir les données en JSON
-    
-    # 2. On exécute la requête SQL
-    # On cherche les stations avec est_active = 0
-    query = "SELECT * FROM stations_historique WHERE est_active = 0"
+    cursor = conn.cursor(dictionary=True)
+    query = "SELECT * FROM stations_historique WHERE est_active = 0" 
     cursor.execute(query)
     stations = cursor.fetchall()
-    
-    # 3. On ferme tout et on renvoie
     cursor.close()
     conn.close()
     return stations

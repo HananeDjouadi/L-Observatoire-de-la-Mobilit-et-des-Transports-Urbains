@@ -37,6 +37,61 @@ function App() {
     brokers: '3 / 3 up'
   });
 
+  // Chargement initial de toutes les stations de Lyon (Grand Lyon API)
+  useEffect(() => {
+    const loadInitialStations = async () => {
+      try {
+        const response = await fetch("https://data.grandlyon.com/fr/datapusher/ws/rdata/jcd_jcdecaux.jcdvelov/all.json?maxfeatures=-1&start=1");
+        const data = await response.json();
+        if (data && data.values) {
+          const allStations = data.values.map(s => {
+            const nomBrut = s.name || '';
+            const nomPropre = nomBrut.includes('-') ? nomBrut.split('-', 2)[1].trim() : nomBrut;
+            return {
+              id: s.number,
+              nom: nomPropre,
+              velos: s.available_bikes || 0,
+              places_totales: s.bike_stands || 0,
+              est_active: s.status === 'OPEN',
+              lat: s.lat,
+              lng: s.lng
+            };
+          });
+
+          // Tri par nom pour la barre de recherche
+          allStations.sort((a, b) => a.nom.localeCompare(b.nom));
+
+          setStations(allStations);
+
+          // Calcul des métriques réelles au chargement
+          const totalBikes = allStations.reduce((sum, s) => sum + s.velos, 0);
+          const activeCount = allStations.filter(s => s.est_active).length;
+          const closedCount = allStations.length - activeCount;
+          const totalDocksUsed = allStations.reduce((sum, s) => sum + s.velos, 0);
+          const totalStands = allStations.reduce((sum, s) => sum + s.places_totales, 0);
+          const avgDockLoad = totalStands > 0 ? Math.round((totalDocksUsed / totalStands) * 100) : 0;
+
+          setMetrics({
+            totalBikes,
+            activeStations: activeCount,
+            totalStations: allStations.length,
+            closedStations: closedCount,
+            avgDockLoad
+          });
+
+          // Sélectionner la première par défaut
+          if (allStations.length > 0) {
+            setSelectedStationId(allStations[0].id);
+          }
+        }
+      } catch (err) {
+        console.error("Erreur lors du chargement initial :", err);
+      }
+    };
+
+    loadInitialStations();
+  }, []);
+
   // Center Panel States
   const [viewMode, setViewMode] = useState('map');
   const [replayTime, setReplayTime] = useState(0); // hours from now (-24 to 0)
@@ -69,27 +124,98 @@ function App() {
     };
   }, [isPlaying]);
 
-  // Background log simulator loop
+  // Connexion WebSocket temps réel connectée à FastAPI
   useEffect(() => {
-    const interval = setInterval(() => {
-      const randomStation = INITIAL_STATIONS[Math.floor(Math.random() * INITIAL_STATIONS.length)];
-      const delta = Math.random() > 0.5 ? 1 : -1;
-      let newBikes = randomStation.velos + delta;
-      if (newBikes < 0) newBikes = 0;
-      if (newBikes > randomStation.places_totales) newBikes = randomStation.places_totales;
+    let ws;
+    let reconnectTimeout;
 
-      const time = new Date().toLocaleTimeString();
-      const newLog = {
-        id: Date.now(),
-        message: `STATION_UPD ${randomStation.id} (${randomStation.nom}) -> ${newBikes} bikes available`,
-        time,
-        source: 'Kafka/rt-bikes'
+    const connectWS = () => {
+      ws = new WebSocket('ws://127.0.0.1:8000/ws/velov');
+
+      ws.onopen = () => {
+        console.log("Connecté au serveur WebSocket de l'Observatoire !");
+        setPipeline(prev => ({ ...prev, brokers: '3 / 3 up (Live)' }));
       };
-      
-      setLogs(prev => [newLog, ...prev.slice(0, 12)]);
-    }, 4000);
 
-    return () => clearInterval(interval);
+      ws.onmessage = (event) => {
+        try {
+          const freshData = JSON.parse(event.data);
+          if (Array.isArray(freshData)) {
+            setStations(prev => {
+              const updated = prev.map(s => {
+                const live = freshData.find(item => item.id === s.id);
+                if (live) {
+                  // Si le nombre de vélos change, on écrit un log dans la console
+                  if (live.velos !== s.velos) {
+                    const time = new Date().toLocaleTimeString();
+                    const newLog = {
+                      id: Date.now() + Math.random(),
+                      message: `STATION_UPD ${live.id} (${live.nom}) -> ${live.velos} bikes available`,
+                      time,
+                      source: 'Kafka/rt-bikes'
+                    };
+                    setLogs(prevLogs => [newLog, ...prevLogs.slice(0, 12)]);
+                  }
+                  return { ...s, ...live };
+                }
+                return s;
+              });
+
+              // Ajout des nouvelles stations temps réel non présentes initialement
+              freshData.forEach(live => {
+                const exists = updated.some(s => s.id === live.id);
+                if (!exists) {
+                  updated.push({
+                    ...live,
+                    lat: 45.75 + (Math.random() - 0.5) * 0.04,
+                    lng: 4.85 + (Math.random() - 0.5) * 0.04
+                  });
+                }
+              });
+
+              // Recalcul des métriques globales en temps réel
+              const totalBikes = updated.reduce((sum, s) => sum + s.velos, 0);
+              const activeCount = updated.filter(s => s.est_active).length;
+              const closedCount = updated.length - activeCount;
+              const totalSts = updated.length;
+              const totalDocksUsed = updated.reduce((sum, s) => sum + s.velos, 0);
+              const totalStands = updated.reduce((sum, s) => sum + s.places_totales, 0);
+              const avgDockLoad = totalStands > 0 ? Math.round((totalDocksUsed / totalStands) * 100) : 0;
+
+              setMetrics({
+                totalBikes,
+                activeStations: activeCount,
+                totalStations: totalSts,
+                closedStations: closedCount,
+                avgDockLoad
+              });
+
+              return updated;
+            });
+          }
+        } catch (err) {
+          console.error("Erreur parsing WebSocket :", err);
+        }
+      };
+
+      ws.onclose = () => {
+        console.log("WebSocket déconnecté, reconnexion dans 5 secondes...");
+        setPipeline(prev => ({ ...prev, brokers: '3 / 3 up (Offline)' }));
+        reconnectTimeout = setTimeout(connectWS, 5000);
+      };
+
+      ws.onerror = (err) => {
+        console.error("Erreur WebSocket :", err);
+        ws.close();
+      };
+    };
+
+    connectWS();
+
+    return () => {
+      if (ws) ws.close();
+      if (reconnectTimeout) clearTimeout(reconnectTimeout);
+    };
   }, []);
 
   // Dynamically modify bike numbers when scrubbing timeline to simulate historical traffic
@@ -113,8 +239,8 @@ function App() {
   // Apply filters to stations
   const filteredStations = processedStations.filter(s => {
     // 1. Search Query filter
-    const matchesSearch = s.nom.toLowerCase().includes(searchQuery.toLowerCase()) || 
-                          s.id.toString().includes(searchQuery);
+    const matchesSearch = s.nom.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      s.id.toString().includes(searchQuery);
     if (!matchesSearch) return false;
 
     // 2. Capacity threshold
@@ -137,16 +263,16 @@ function App() {
   return (
     <div className="dashboard-grid">
       <Header />
-      <MetricsBar 
+      <MetricsBar
         totalBikes={metrics.totalBikes}
         activeStations={metrics.activeStations}
         totalStations={metrics.totalStations}
         closedStations={metrics.closedStations}
         avgDockLoad={metrics.avgDockLoad}
       />
-      
+
       <div className="main-content" style={{ padding: '0 16px', boxSizing: 'border-box' }}>
-        <LeftSidebar 
+        <LeftSidebar
           filterType={filterType}
           setFilterType={setFilterType}
           pipeline={pipeline}
@@ -158,8 +284,8 @@ function App() {
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
         />
-        
-        <CenterPanel 
+
+        <CenterPanel
           viewMode={viewMode}
           setViewMode={setViewMode}
           stations={filteredStations}
@@ -171,7 +297,7 @@ function App() {
           setIsPlaying={setIsPlaying}
         />
 
-        <RightSidebar 
+        <RightSidebar
           selectedStation={selectedStation}
           logs={logs}
         />

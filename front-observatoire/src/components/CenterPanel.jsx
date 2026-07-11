@@ -21,7 +21,7 @@ const CenterPanel = ({
 
   // Initialize Map
   useEffect(() => {
-    if (viewMode !== 'map' || !mapContainerRef.current) return;
+    if (!mapContainerRef.current) return;
 
     if (!mapInstanceRef.current) {
       // Centered on Lyon city center
@@ -40,14 +40,20 @@ const CenterPanel = ({
       mapInstanceRef.current = map;
       markersGroupRef.current = L.layerGroup().addTo(map);
     }
+  }, []);
 
-    // Clean up on unmount
-    return () => {};
+  // Force invalidates Leaflet layout when returning to Map View
+  useEffect(() => {
+    if (viewMode === 'map' && mapInstanceRef.current) {
+      setTimeout(() => {
+        mapInstanceRef.current.invalidateSize();
+      }, 50);
+    }
   }, [viewMode]);
 
   // Update Markers
   useEffect(() => {
-    if (viewMode !== 'map' || !markersGroupRef.current) return;
+    if (!markersGroupRef.current) return;
 
     const markersGroup = markersGroupRef.current;
     markersGroup.clearLayers();
@@ -89,7 +95,7 @@ const CenterPanel = ({
         marker.addTo(markersGroup);
       }
     });
-  }, [viewMode, stations, selectedStationId, setSelectedStationId]);
+  }, [stations, selectedStationId, setSelectedStationId]);
 
   // Recenter map on selected station if it changes
   const recenterMap = () => {
@@ -128,45 +134,48 @@ const CenterPanel = ({
         </div>
       )}
 
-      {/* Map display wrapper */}
-      {viewMode === 'map' ? (
-        <div className="map-view-wrapper">
-          {/* Absolute overlay tabs inside the map container */}
-          <div className="view-tabs map-overlay-tabs">
-            <button 
-              className={`tab-btn ${viewMode === 'map' ? 'active' : ''}`}
-              onClick={() => setViewMode('map')}
-            >
-              Map View
-            </button>
-            <button 
-              className={`tab-btn ${viewMode === 'list' ? 'active' : ''}`}
-              onClick={() => setViewMode('list')}
-            >
-              List View
-            </button>
-          </div>
-
-          {/* Absolute overlay legend inside the map container */}
-          <div className="map-legend map-overlay-legend">
-            <div className="legend-item">
-              <span className="legend-dot open"></span>
-              <span className="open-txt">OPEN</span>
-            </div>
-            <div className="legend-item">
-              <span className="legend-dot low"></span>
-              <span className="low-txt">LOW</span>
-            </div>
-            <div className="legend-item">
-              <span className="legend-dot closed"></span>
-              <span className="closed-txt">CLOSED</span>
-            </div>
-          </div>
-
-          <div ref={mapContainerRef} className="leaflet-map-element" />
+      {/* Map display wrapper - kept in DOM, toggled via display: none */}
+      <div 
+        className="map-view-wrapper"
+        style={{ display: viewMode === 'map' ? 'flex' : 'none' }}
+      >
+        {/* Absolute overlay tabs inside the map container */}
+        <div className="view-tabs map-overlay-tabs">
+          <button 
+            className={`tab-btn ${viewMode === 'map' ? 'active' : ''}`}
+            onClick={() => setViewMode('map')}
+          >
+            Map View
+          </button>
+          <button 
+            className={`tab-btn ${viewMode === 'list' ? 'active' : ''}`}
+            onClick={() => setViewMode('list')}
+          >
+            List View
+          </button>
         </div>
-      ) : (
-        /* List view fallback inside center area */
+
+        {/* Absolute overlay legend inside the map container */}
+        <div className="map-legend map-overlay-legend">
+          <div className="legend-item">
+            <span className="legend-dot open"></span>
+            <span className="open-txt">OPEN</span>
+          </div>
+          <div className="legend-item">
+            <span className="legend-dot low"></span>
+            <span className="low-txt">LOW</span>
+          </div>
+          <div className="legend-item">
+            <span className="legend-dot closed"></span>
+            <span className="closed-txt">CLOSED</span>
+          </div>
+        </div>
+
+        <div ref={mapContainerRef} className="leaflet-map-element" />
+      </div>
+
+      {/* List view fallback inside center area */}
+      {viewMode === 'list' && (
         <div className="list-view-wrapper">
           <table className="stations-table">
             <thead>
