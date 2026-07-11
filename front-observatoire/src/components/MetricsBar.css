@@ -1,8 +1,8 @@
 .metrics-bar-container {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  background-color: #12131a; /* Couleur sombre du fond des cartes */
-  border-bottom: 1px solid #1f212d;
+  background-color: var(--bg-card); /* Gris foncé au lieu du bleu nuit */
+  border-bottom: 1px solid var(--border-color);
   width: 100%;
   user-select: none;
 }
@@ -12,7 +12,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  border-right: 1px solid #1f212d;
+  border-right: 1px solid var(--border-color);
 }
 
 .metric-item:last-child {
@@ -22,7 +22,7 @@
 .metric-label {
   font-size: 0.68rem;
   font-weight: 700;
-  color: #7e8494; /* Gris secondaire */
+  color: var(--text-secondary); /* Gris secondaire */
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }

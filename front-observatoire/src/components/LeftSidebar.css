@@ -1,8 +1,8 @@
 .left-sidebar-container {
   display: flex;
   flex-direction: column;
-  background-color: #0b0c10; /* Fond noir du panneau de gauche */
-  border-right: 1px solid #1f212d;
+  background-color: var(--bg-main); /* Noir au lieu de bleu nuit */
+  border-right: 1px solid var(--border-color);
   padding: 20px;
   width: 260px;
   flex-shrink: 0;
@@ -37,8 +37,8 @@
 }
 
 .filter-btn {
-  background-color: #16171d;
-  border: 1px solid #2e303a;
+  background-color: var(--bg-card); /* Gris foncé au lieu de bleu nuit */
+  border: 1px solid var(--border-color);
   color: #ffffff;
   padding: 10px 12px;
   border-radius: 6px;
@@ -175,8 +175,8 @@
 }
 
 .sidebar-search-input {
-  background-color: #16171d;
-  border: 1px solid #2e303a;
+  background-color: var(--bg-card); /* Gris foncé au lieu de bleu nuit */
+  border: 1px solid var(--border-color);
   color: #ffffff;
   border-radius: 6px;
   padding: 8px 12px;

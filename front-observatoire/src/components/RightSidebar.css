@@ -1,8 +1,8 @@
 .right-sidebar-container {
   display: flex;
   flex-direction: column;
-  background-color: #0b0c10; /* Fond sombre assorti */
-  border-left: 1px solid #1f212d;
+  background-color: var(--bg-main); /* Noir au lieu de bleu nuit */
+  border-left: 1px solid var(--border-color);
   padding: 20px;
   width: 340px;
   flex-shrink: 0;
@@ -27,8 +27,8 @@
 
 /* Station Details Card */
 .station-detail-card {
-  background-color: #12131a;
-  border: 1px solid #1f212d;
+  background-color: var(--bg-card); /* Gris foncé au lieu de bleu nuit */
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 16px;
 }
@@ -186,7 +186,7 @@
 
 .logs-console-wrapper {
   background-color: rgba(0, 0, 0, 0.15);
-  border: 1px solid #1f212d;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 12px;
   overflow-y: auto;

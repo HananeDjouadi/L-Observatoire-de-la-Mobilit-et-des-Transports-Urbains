@@ -164,22 +164,6 @@ const CenterPanel = ({
           </div>
 
           <div ref={mapContainerRef} className="leaflet-map-element" />
-          
-          {/* Bottom Floating tools */}
-          <div className="floating-tools-bar">
-            <button className="tool-btn" onClick={recenterMap} title="Recenter selection">
-              🔍
-            </button>
-            <button className="tool-btn" onClick={() => alert('Text tool (demo)')} title="Text Mode">
-              T
-            </button>
-            <button className="tool-btn" onClick={() => alert('Draw route (demo)')} title="Draw Tool">
-              ✏️
-            </button>
-            <button className="tool-btn" onClick={() => alert('Chat feedback (demo)')} title="Comments">
-              💬
-            </button>
-          </div>
         </div>
       ) : (
         /* List view fallback inside center area */
@@ -242,14 +226,6 @@ const CenterPanel = ({
         </div>
 
         <div className="replay-slider-row">
-          {/* Subtle play pause button */}
-          <button 
-            className={`replay-play-btn ${isPlaying ? 'playing' : ''}`}
-            onClick={() => setIsPlaying(!isPlaying)}
-          >
-            {isPlaying ? '⏸' : '▶'}
-          </button>
-          
           <div className="slider-track-container">
             <input 
               type="range" 
@@ -261,6 +237,10 @@ const CenterPanel = ({
                 setReplayTime(parseInt(e.target.value));
               }}
               className="replay-slider-input"
+              style={{
+                background: `linear-gradient(to right, rgba(244, 63, 94, 0.25) ${((replayTime + 24) / 24) * 100}%, #16161a ${((replayTime + 24) / 24) * 100}%)`,
+                border: '1px solid var(--border-color)'
+              }}
             />
             <div className="slider-labels-row">
               <span>-24h</span>
