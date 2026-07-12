@@ -1,48 +1,118 @@
 # L'Observatoire de la Mobilité et des Transports Urbains
 
 ## Description du projet
-Ce projet est une plateforme de **Data Streaming en temps réel** conçue pour observer et analyser la mobilité urbaine dans la métropole de Lyon. 
+Ce projet est une plateforme de **Data Streaming et Analytics en temps réel** conçue pour observer, analyser et prédire la mobilité urbaine (disponibilité des vélos en libre-service Vélo'v) dans la métropole de Lyon. 
 
-L'objectif actuel est de capter, d'ingérer et de traiter en continu les données des stations Vélo'v (vélos en libre-service) afin de préparer un flux de données propre et exploitable pour un futur tableau de bord interactif.
+Le système ingère en continu les flux de données officiels de la métropole, nettoie et enrichit les données en temps réel via Apache Kafka, stocke l'historique dans une base MySQL, et diffuse les mises à jour en direct via WebSockets vers un tableau de bord React haut de gamme (thème sombre cyberpunk / thème clair beige papier). Il intègre également des fonctionnalités de prédiction statistique (ARIMA, Random Forest, LSTM) pour estimer la disponibilité future des vélos.
+
+---
 
 ## Architecture Technique (Pipeline de Données)
-L'architecture repose sur des principes de découplage et de traitement à la volée (Stream Processing) :
 
-1. **Source des données :** API Open Data de la Métropole de Lyon (Web Service temps réel).
-2. **Ingestion (Producer) :** Un script Python qui interroge l'API à intervalles réguliers et propulse la donnée brute dans le système de messagerie.
-3. **Message Broker :** **Apache Kafka** (déployé sous Docker avec l'image officielle en mode KRaft). Il encaisse la charge et assure la résilience du flux de données via le topic `lyon-velov-flux`.
-4. **Traitement (Consumer) :** Un script Python qui s'abonne au flux Kafka et effectue un nettoyage à la volée :
-   - Filtrage des stations inactives (`CLOSED`).
-   - Nettoyage et formatage des chaînes de caractères (noms des stations).
-   - Calcul de métriques enrichies (pourcentage de remplissage en temps réel).
+```
+[ Grand Lyon API (Vélo'v) ]
+           │ (polling périodique)
+           ▼
+     [ producer.py ] (Producteur Kafka)
+           │
+           ▼  (Flux brut : topic 'lyon-velov-flux')
+     [ Apache Kafka (Docker) ]
+           │
+           ▼
+     [ consumer.py ] (Consommateur & Nettoyage)
+      ├── Nettoie les noms, filtre les stations inactives
+      ├── Calcule le pourcentage de remplissage en temps réel
+      ├── Insère les clichés dans la table MySQL 'stations_historique'
+      └── Propulse le flux propre dans le topic 'lyon-velov-propre'
+           │
+           ▼
+     [ api.py (FastAPI Backend) ] 
+      ├── Serveur WebSocket (ws://127.0.0.1:8000/ws/velov)
+      └── Endpoint prédictions (GET /predict/{station_id})
+           │
+           ▼ (Mises à jour en direct)
+     [ React Frontend (Vite) ]
+      └── Tableau de bord interactif (Cartes, Tableaux, Graphiques, Thèmes)
+```
 
-## Prérequis
-Pour faire tourner ce projet sur votre machine locale, vous avez besoin de :
-* **Python 3.x**
-* **Docker Desktop** (pour faire tourner l'infrastructure Kafka)
+---
+
+## Structure du Projet
+
+* `producer.py` : Récupère les données Vélo'v toutes les minutes et les publie brutes sur Kafka.
+* `consumer.py` : Reçoit les messages bruts, calcule le taux de remplissage, filtre les stations, écrit les clichés historiques dans MySQL et publie les données propres sur Kafka.
+* `api.py` : Serveur FastAPI servant les connexions WebSockets pour le Frontend et hébergeant les routes de prédiction.
+* `prediction/modele_statistique.ipynb` : Carnet Jupyter (Notebook) permettant d'extraire l'historique SQL d'une station et d'entraîner/comparer les modèles de prédiction (ARIMA, Random Forest, LSTM).
+* `front-observatoire/` : Code source du Frontend React.
+  * `src/components/Header.jsx` : En-tête avec horloge et sélecteur de thème glissant moderne.
+  * `src/components/MetricsBar.jsx` : Synthèse globale du réseau en temps réel (vélos, stations actives/fermées, remplissage moyen).
+  * `src/components/LeftSidebar.jsx` : Filtres rapides, contrôle du lag Kafka, barre de recherche et liste des stations.
+  * `src/components/CenterPanel.jsx` : Cartographie Leaflet interactive (avec marqueurs réactifs) et vue liste tabulaire.
+  * `src/components/RightSidebar.jsx` : Détail de la station sélectionnée, graphiques d'occupation récents et terminal de logs en direct.
+
+---
+
+## Configuration requise
+* **Python 3.10+** (environnement virtuel recommandé)
+* **Docker & Docker Desktop** (pour exécuter Kafka)
+* **MySQL Database** (ex: Laragon, XAMPP, WAMP ou Docker)
+* **Node.js & npm** (pour le frontend React)
+
+---
 
 ## Installation et Démarrage
 
-**1. Lancement de l'infrastructure Kafka**
-Dans un terminal, montez le conteneur Docker en arrière-plan :
+### 1. Base de Données MySQL
+Démarrez votre serveur MySQL local et créez une base de données nommée `observatoire_velov` :
+```sql
+CREATE DATABASE observatoire_velov;
+```
+La table `stations_historique` sera automatiquement créée lors du premier lancement de `consumer.py`.
+
+### 2. Infrastructure Apache Kafka (Docker)
+Dans la racine du projet, lancez Kafka en arrière-plan :
 ```bash
-docker-compose up -d 
+docker-compose up -d
 ```
 
-**2.Installation des dépendances Python**
-Activez votre environnement virtuel (venv) et installez les paquets requis :
+### 3. Environnement Python (Backend & Traitement)
+Installez les dépendances du projet :
 ```bash
-pip install kafka-python requests python-dotenv
+pip install -r requirements.txt
 ```
+*(ou installez individuellement : `pip install kafka-python-ng requests python-dotenv mysql-connector-python fastapi uvicorn pandas jinja2`)*
 
-**3. Démarrage du Pipeline de Streaming**
-Ouvrez deux terminaux distincts (avec l'environnement virtuel activé sur les deux).
+### 4. Lancement du Pipeline de Streaming
+Ouvrez trois terminaux distincts :
 
-Dans le Terminal 1, lancez le Producteur (récupération des données) :
+* **Terminal 1 :** Lancer le producteur (ingestion) :
+  ```bash
+  python producer.py
+  ```
+* **Terminal 2 :** Lancer le consommateur (nettoyage & base de données) :
+  ```bash
+  python consumer.py
+  ```
+* **Terminal 3 :** Lancer le serveur API (WebSocket & Routes de Prédiction) :
+  ```bash
+  uvicorn api:app --reload --port 8000
+  ```
+
+### 5. Lancement de l'Interface Utilisateur (Frontend)
+Dans un nouveau terminal :
 ```bash
-python producer.py
+cd front-observatoire
+npm install
+npm run dev
 ```
-Dans le Terminal 2, lancez le Consommateur (nettoyage et affichage) :
-```bash
-python consumer.py
-```
+Ouvrez ensuite votre navigateur sur [http://localhost:5173](http://localhost:5173).
+
+---
+
+## Prédictions et Modèles Statistiques
+
+Le dossier `/prediction` contient le Notebook Jupyter `modele_statistique.ipynb`. 
+1. Lancez votre serveur Jupyter ou utilisez l'extension VS Code Jupyter.
+2. Exécutez le notebook pour charger les données réelles stockées dans MySQL par votre consommateur.
+3. Comparez les modèles prédictifs ARIMA, Random Forest et LSTM.
+4. L'API FastAPI expose la route `GET /predict/{station_id}` pour intégrer vos modèles entraînés et renvoyer les prédictions comparatives en temps réel sur l'interface.

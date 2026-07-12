@@ -68,3 +68,16 @@ async def get_stations_fermees():
     cursor.close()
     conn.close()
     return stations
+
+
+
+@app.get("/predict/{station_id}")
+async def get_predictions(station_id: int):
+    # Charge tes 3 modèles
+    # Prédit avec les 3
+    # Renvoie un JSON avec les 3 résultats pour comparaison
+    return {
+        "arima": prediction_arima,
+        "rf": prediction_rf,
+        "lstm": prediction_lstm
+    }
