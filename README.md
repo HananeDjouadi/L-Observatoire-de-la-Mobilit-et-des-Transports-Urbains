@@ -3,7 +3,7 @@
 ## Description du projet
 Ce projet est une plateforme de **Data Streaming et Analytics en temps réel** conçue pour observer, analyser et prédire la mobilité urbaine (disponibilité des vélos en libre-service Vélo'v) dans la métropole de Lyon. 
 
-Le système ingère en continu les flux de données officiels de la métropole, nettoie et enrichit les données en temps réel via Apache Kafka, stocke l'historique dans une base MySQL, et diffuse les mises à jour en direct via WebSockets vers un tableau de bord React haut de gamme (thème sombre cyberpunk / thème clair beige papier). Il intègre également des fonctionnalités de prédiction statistique (ARIMA, Random Forest, LSTM) pour estimer la disponibilité future des vélos.
+Le système ingère en continu les flux de données officiels de la métropole, nettoie et enrichit les données en temps réel via Apache Kafka, stocke l'historique dans une base MySQL, et diffuse les mises à jour en direct via WebSockets vers un tableau de bord React. Il intègre également des fonctionnalités de prédiction statistique (ARIMA, Random Forest, LSTM) pour estimer la disponibilité future des vélos.
 
 ---
 
