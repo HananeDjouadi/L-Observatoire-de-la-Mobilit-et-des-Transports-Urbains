@@ -17,7 +17,13 @@ const INITIAL_STATIONS = [
 ];
 
 function App() {
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const getInitialTheme = () => {
+    const hour = new Date().getHours();
+    // Sombre après 18h ou avant 6h du matin, clair en journée (matin/après-midi)
+    return hour >= 18 || hour < 6;
+  };
+
+  const [isDarkMode, setIsDarkMode] = useState(getInitialTheme);
   const [metrics, setMetrics] = useState({
     totalBikes: 107,
     activeStations: 10,

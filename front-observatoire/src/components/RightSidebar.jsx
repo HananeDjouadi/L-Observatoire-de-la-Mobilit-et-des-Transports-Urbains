@@ -26,6 +26,54 @@ const RightSidebar = ({
     return trend;
   };
 
+  const [predictions, setPredictions] = React.useState(null);
+  const [activeModel, setActiveModel] = React.useState('arima'); // 'arima', 'rf', 'lstm'
+  const [loading, setLoading] = React.useState(false);
+
+  React.useEffect(() => {
+    if (!selectedStation) {
+      setPredictions(null);
+      return;
+    }
+
+    const fetchPredictions = async () => {
+      setLoading(true);
+      try {
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        const apiHost = isLocal ? 'http://127.0.0.1:8000' : '';
+        const response = await fetch(`${apiHost}/predict/${selectedStation.id}`);
+        if (response.ok) {
+          const data = await response.json();
+          setPredictions(data);
+        } else {
+          setPredictions(null);
+        }
+      } catch (err) {
+        console.error("Error fetching predictions:", err);
+        setPredictions(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPredictions();
+  }, [selectedStation]);
+
+  const getTrendElement = (preds) => {
+    if (!preds || preds.length < 4 || !selectedStation) return null;
+    const current = selectedStation.velos;
+    const future = preds[3];
+    const diff = future - current;
+
+    if (diff > 1) {
+      return <span className="trend-badge trend-up">▲ Hausse (+{diff})</span>;
+    } else if (diff < -1) {
+      return <span className="trend-badge trend-down">▼ Baisse ({diff})</span>;
+    } else {
+      return <span className="trend-badge trend-flat">● Stabilité</span>;
+    }
+  };
+
   const trendBars = getOccupancyTrend();
   const freeDocks = selectedStation ? (selectedStation.places_totales - selectedStation.velos) : 0;
 
@@ -80,6 +128,66 @@ const RightSidebar = ({
                   </div>
                 ))}
               </div>
+            </div>
+
+            {/* PREDICTIONS & FORECAST SECTION */}
+            <div className="predictions-container">
+              <span className="predictions-title">PREDICTIONS & FORECAST (1H)</span>
+              
+              <div className="model-tabs">
+                <button 
+                  className={`model-tab-btn ${activeModel === 'arima' ? 'active' : ''}`}
+                  onClick={() => setActiveModel('arima')}
+                >
+                  ARIMA
+                </button>
+                <button 
+                  className={`model-tab-btn ${activeModel === 'rf' ? 'active' : ''}`}
+                  onClick={() => setActiveModel('rf')}
+                >
+                  M.L. (Forêt)
+                </button>
+                <button 
+                  className={`model-tab-btn ${activeModel === 'lstm' ? 'active' : ''}`}
+                  onClick={() => setActiveModel('lstm')}
+                >
+                  LSTM (D.L.)
+                </button>
+              </div>
+
+              {loading ? (
+                <div className="predictions-loading-spinner">
+                  <div className="spinner"></div>
+                  <span>Inférence en cours...</span>
+                </div>
+              ) : predictions ? (
+                <div className="predictions-content">
+                  <div className="trend-summary-row">
+                    <span className="trend-label">Tendance :</span>
+                    {getTrendElement(predictions[activeModel])}
+                  </div>
+                  
+                  <div className="predictions-timeline">
+                    {predictions[activeModel] && predictions[activeModel].map((val, idx) => (
+                      <div key={idx} className="timeline-step">
+                        <span className="step-time">+{15 * (idx + 1)} min</span>
+                        <div className="step-bar-wrapper">
+                          <div 
+                            className={`step-bar-inner ${activeModel}`}
+                            style={{ width: `${(val / predictions.places_totales) * 100}%` }}
+                          />
+                        </div>
+                        <span className="step-value">{val} vélos</span>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="prediction-mode-info">
+                    Source: {predictions.mode || "Calcul local"}
+                  </div>
+                </div>
+              ) : (
+                <div className="predictions-error">Aucune prédiction disponible.</div>
+              )}
             </div>
           </div>
         ) : (
