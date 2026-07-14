@@ -1,6 +1,10 @@
 import json
+import os
 from kafka import KafkaConsumer, KafkaProducer
 import mysql.connector
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def json_deserializer(data):
     # L'opération inverse du Producer : on traduit les octets de Kafka en dictionnaire Python
@@ -27,12 +31,13 @@ try:
     print("Connecté ! En attente de nouvelles données...")
     print("-" * 50)
 
-    # 1. Connexion à ta base MySQL
+    # 1. Connexion à ta base MySQL Cloud (Aiven)
     db = mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="", 
-        database="observatoire_velov"
+        host=os.getenv("AIVEN_HOST"),
+        port=int(os.getenv("AIVEN_PORT", 14198)),
+        user=os.getenv("AIVEN_USER"),
+        password=os.getenv("AIVEN_PASSWORD"),
+        database="defaultdb"
     )
     cursor = db.cursor()
 

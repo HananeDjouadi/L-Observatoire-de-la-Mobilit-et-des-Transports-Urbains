@@ -1,19 +1,24 @@
 import json
 import asyncio
+import os
 from fastapi import FastAPI, WebSocket
 from fastapi.middleware.cors import CORSMiddleware
 from aiokafka import AIOKafkaConsumer
 import mysql.connector
+from dotenv import load_dotenv
+
+load_dotenv()
 
 app = FastAPI(title="API Observatoire Mobilité")
 
 # Fonction pour se connecter à la base
 def get_db_connection():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="observatoire_velov"
+        host=os.getenv("AIVEN_HOST"),
+        port=int(os.getenv("AIVEN_PORT", 14198)),
+        user=os.getenv("AIVEN_USER"),
+        password=os.getenv("AIVEN_PASSWORD"),
+        database="defaultdb"
     )
 
 
