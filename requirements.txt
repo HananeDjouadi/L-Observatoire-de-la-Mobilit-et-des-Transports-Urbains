@@ -1,0 +1,17 @@
+# FastAPI Backend & Utilities
+fastapi
+uvicorn
+websockets
+aiokafka
+mysql-connector-python
+python-dotenv
+
+# Data Analysis & Statistics
+pandas
+numpy
+matplotlib
+statsmodels
+
+# Machine Learning & Deep Learning
+scikit-learn
+# tensorflow  # (Optionnel - Désactivé par défaut en local à cause de la limite de longueur de chemin de Windows. Utilisez Google Colab ou activez les Long Paths sous Windows pour l'installer)
