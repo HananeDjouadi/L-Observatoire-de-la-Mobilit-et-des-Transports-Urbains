@@ -61,10 +61,10 @@ Le système propose une architecture hybride :
 
 Pour faire tourner le projet localement et connecter votre code à la base cloud, créez un fichier nommé **`.env`** à la racine de votre projet avec le format suivant :
 ```ini
-AIVEN_HOST=mysql-velov-velovlyon.h.aivencloud.com
+AIVEN_HOST=votre-host-aiven.aivencloud.com
 AIVEN_PORT=14198
 AIVEN_USER=avnadmin
-AIVEN_PASSWORD=VotreMotDePasseAiven
+AIVEN_PASSWORD=votre_mot_de_passe
 ```
 *(Le fichier `.env` est automatiquement ignoré par `.gitignore` pour éviter toute fuite de mot de passe).*
 
